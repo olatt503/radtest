@@ -1,0 +1,14 @@
+authenticate {
+	Auth-Type smsotp {
+		krb5
+		smsotp
+	}
+	Auth-Type smsotp-reply {
+		smsotp
+	}
+}
+authorize {
+	preprocess
+	files
+	smsotp
+}	

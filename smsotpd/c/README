@@ -1,0 +1,9 @@
+Dependencies
+============
+
+Debian:
+apt-get install libdb-dev 
+
+SuSE:
+
+zypper install libdb-4_5-devel

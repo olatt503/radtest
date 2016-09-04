@@ -1,0 +1,58 @@
+sudo apt-get install libossp-uuid-perl libfrontier-rpc-perl libcrypt-ssleay-perl libio-socket-ssl-perl git bzip2 ssh sudo gcc libssl-dev make openssl krb5-user libkrb5-dev libpoe-perl postfix libauthen-radius-perl libberkeleydb-perl ntpdate libterm-readpassword-perl
+
+Compile Freeradius
+==================
+
+sudo mkdir /local
+sudo chown sithglan /local
+./configure --with-openssl --prefix=/local/freeradius-server-2.1.9
+make
+sudo make install
+
+cd src/modules/rlm_smsotp
+chmod +x configure
+./configure --prefix=/local/freeradius-server-2.1.9
+make
+make install
+
+cd src/modules/rlm_krb5
+./configure --prefix=/local/freeradius-server-2.1.9
+make
+make install
+
+Radius Authentication
+=====================
+
+clients.conf:
+client 10.10.20.220 {
+        secret = testing123
+        shortname = netscaler
+}
+
+sites-enabled/default:
+authenticate {
+        Auth-Type smsotp {
+                krb5
+                smsotp
+        }
+
+        Auth-Type smsotp-reply {
+                smsotp
+        }
+}
+
+authorize {
+        preprocess
+        files
+        smsotp
+}
+
+users:
+DEFAULT Auth-Type := smsotp
+
+hints:
+DEFAULT User-Name =~ "^directory\\\\([^@]+)"
+     User-Name := "%{1}@DIRECTORY.GMVL.DE"
+
+DEFAULT User-Name =~ "^([^@]+)@directory.gmvl.de"
+     User-Name := "%{1}@DIRECTORY.GMVL.DE"

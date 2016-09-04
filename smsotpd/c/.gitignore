@@ -1,0 +1,4 @@
+smsotpd
+*.o
+.*.swp
+cscope.*
